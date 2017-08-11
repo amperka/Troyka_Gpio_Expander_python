@@ -47,7 +47,7 @@ class Gpio_exp(object):
 
         # Setup I2C interface for accelerometer and magnetometer.
         self._gpioexp = smbus.SMBus(i2c)
-        self._gpioexp.writeRaw8(GPIO_EXPANDER_RESET)
+        self._gpioexp.write_byte(GPIO_EXPANDER_RESET)
 
     def digitalReadPort(self):
         port = self._gpioexp.read_word_data(GPIO_EXPANDER_DIGITAL_READ)
