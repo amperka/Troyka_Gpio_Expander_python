@@ -61,9 +61,9 @@ class Gpio_exp(object):
     def digitalWrite(self, pin, value):
         sendData = 1<<pin
         if value:
-            self._gpioexp.write_word_data(self._addr, DIGITAL_WRITE_HIGH, sendData)
+            self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, sendData)
         else:
-            self._gpioexp.write_word_data(self._addr, DIGITAL_WRITE_LOW, sendData)
+            self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_LOW, sendData)
 '''
 #    def pinMode(pin, mode):
 #        if mode
