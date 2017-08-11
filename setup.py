@@ -18,7 +18,7 @@ classifiers = ['Development Status :: 4 - Beta',
                'Topic :: System :: Hardware']
 
 setup(name              = 'Amperka_GPIO_expander',
-      version           = '0.0.1',
+      version           = '0.0.101',
       author            = 'Vasily Acos',
       author_email      = 'vasily@amperka.ru',
       description       = 'Python code to use the troyka GPIO expander with Raspberry Pi & BeagleBone Black.',
