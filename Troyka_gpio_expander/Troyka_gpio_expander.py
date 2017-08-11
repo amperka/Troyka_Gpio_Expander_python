@@ -44,21 +44,21 @@ LSM303_MAGGAIN_8_1 = 0xE0 # +/- 8.1
 
 """
 GPIO_EXPANDER_DEFAULT_I2C_ADDRESS   = 0X2A
-GPIO_EXPANDER_WHO_AM_I              = 0x00  # Отдали UID
-GPIO_EXPANDER_RESET                 = 0x01  # сброс
-GPIO_EXPANDER_CHANGE_I2C_ADDR       = 0x02  # сменить I2C-адрес вручную
-GPIO_EXPANDER_SAVE_I2C_ADDR         = 0x03  # Сохранить текущий адрес во флэшчтобы стартовать при последующих включениях с него
-GPIO_EXPANDER_PORT_MODE_INPUT       = 0x04  # настроили пины на вход
-GPIO_EXPANDER_PORT_MODE_PULLUP      = 0x05  # .. вход с поддтяжкой вверх
-GPIO_EXPANDER_PORT_MODE_PULLDOWN    = 0x06  # .. с подтяжкой вниз
-GPIO_EXPANDER_PORT_MODE_OUTPUT      = 0x07  # .. на выход
-GPIO_EXPANDER_DIGITAL_READ          = 0x08  # считали состояние виртуального порта
-GPIO_EXPANDER_DIGITAL_WRITE_HIGH    = 0x09  # Выставили пины виртуального порта в высокий уровень
-GPIO_EXPANDER_DIGITAL_WRITE_LOW     = 0x0A # .. в низкий уровень
-GPIO_EXPANDER_ANALOG_WRITE          = 0x0B # Запустить ШИМ
-GPIO_EXPANDER_ANALOG_READ           = 0x0C # Считать значениие с АЦП
-GPIO_EXPANDER_PWM_FREQ              = 0x0D # установка частоты ШИМ (общая для всех PWM-пинов)
-GPIO_EXPANDER_ADC_SPEED             = 0x0E # Смена скорости АЦП. 0-8. Чем меньше - тем выше скорость, но больше требования к мощности источника измеряемого напряжения
+GPIO_EXPANDER_WHO_AM_I              = 0x00
+GPIO_EXPANDER_RESET                 = 0x01
+GPIO_EXPANDER_CHANGE_I2C_ADDR       = 0x02
+GPIO_EXPANDER_SAVE_I2C_ADDR         = 0x03
+GPIO_EXPANDER_PORT_MODE_INPUT       = 0x04
+GPIO_EXPANDER_PORT_MODE_PULLUP      = 0x05
+GPIO_EXPANDER_PORT_MODE_PULLDOWN    = 0x06
+GPIO_EXPANDER_PORT_MODE_OUTPUT      = 0x07
+GPIO_EXPANDER_DIGITAL_READ          = 0x08
+GPIO_EXPANDER_DIGITAL_WRITE_HIGH    = 0x09
+GPIO_EXPANDER_DIGITAL_WRITE_LOW     = 0x0A
+GPIO_EXPANDER_ANALOG_WRITE          = 0x0B
+GPIO_EXPANDER_ANALOG_READ           = 0x0C
+GPIO_EXPANDER_PWM_FREQ              = 0x0D
+GPIO_EXPANDER_ADC_SPEED             = 0x0E
 
 
 class GPIO_EXPANDER(object):
@@ -134,37 +134,3 @@ class GPIO_EXPANDER(object):
     def analogRead(self, pin):
         self._gpioexp.write8(GPIO_EXPANDER_ANALOG_READ, pin)
         resilt = self._gpioexp._bus.i2c_read_device(self._address, 2)
-'''
-    def getUID(self):
-    def adcSpeed(speed):
-
-    def 
-
-    def read(self):
-        """Read the accelerometer and magnetometer value.  A tuple of tuples will
-        be returned with:
-          ((accel X, accel Y, accel Z), (mag X, mag Y, mag Z))
-        """
-        # Read the accelerometer as signed 16-bit little endian values.
-        accel_raw = self._accel.readList(LSM303_REGISTER_ACCEL_OUT_X_L_A | 0x80, 6)
-        accel = struct.unpack('<hhh', accel_raw)
-        # Convert to 12-bit values by shifting unused bits.
-        accel = (accel[0] >> 4, accel[1] >> 4, accel[2] >> 4)
-        # Read the magnetometer.
-        mag_raw = self._mag.readList(LSM303_REGISTER_MAG_OUT_X_H_M, 6)
-        mag = struct.unpack('>hhh', mag_raw)
-        return (accel, mag)
-
-    def set_mag_gain(gain=LSM303_MAGGAIN_1_3):
-        """Set the magnetometer gain.  Gain should be one of the following
-        constants:
-         - LSM303_MAGGAIN_1_3 = +/- 1.3 (default)
-         - LSM303_MAGGAIN_1_9 = +/- 1.9
-         - LSM303_MAGGAIN_2_5 = +/- 2.5
-         - LSM303_MAGGAIN_4_0 = +/- 4.0
-         - LSM303_MAGGAIN_4_7 = +/- 4.7
-         - LSM303_MAGGAIN_5_6 = +/- 5.6
-         - LSM303_MAGGAIN_8_1 = +/- 8.1
-        """
-        self._mag.write8(LSM303_REGISTER_MAG_CRB_REG_M, gain)
-'''
