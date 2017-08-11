@@ -59,7 +59,7 @@ class Gpio_exp(object):
         self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_LOW, ~value)        
 
     def digitalWrite(self, pin, value):
-        sendData = 1<<pin
+        sendData = 0x0001<<pin
         if value:
             self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, sendData)
         else:
