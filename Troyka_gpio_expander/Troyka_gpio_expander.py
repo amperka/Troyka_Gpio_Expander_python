@@ -75,7 +75,7 @@ class GPIO_EXPANDER(object):
             import Adafruit_GPIO.I2C as I2C
             i2c = I2C
         self._gpioexp = i2c.get_i2c_device(gpioexp_address, **kwargs)
-        self._gpioexp.writeRaw8(GPIO_EXPANDER_RESET)
+        #self._gpioexp.writeRaw8(GPIO_EXPANDER_RESET)
 
         # Enable the accelerometer
 #        self._accel.write8(LSM303_REGISTER_ACCEL_CTRL_REG1_A, 0x27)
