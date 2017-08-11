@@ -77,6 +77,7 @@ class GPIO_EXPANDER(object):
         self._gpioexp = i2c.get_i2c_device(gpioexp_address, **kwargs)
         #self._gpioexp.writeRaw8(GPIO_EXPANDER_RESET)
 
+
         # Enable the accelerometer
 #        self._accel.write8(LSM303_REGISTER_ACCEL_CTRL_REG1_A, 0x27)
         # Select hi-res (12-bit) or low-res (10-bit) output mode.
