@@ -47,22 +47,23 @@ class Gpio_exp(object):
 
         # Setup I2C interface for accelerometer and magnetometer.
         self._gpioexp = smbus.SMBus(i2c)
-        self._gpioexp.write_byte(GPIO_EXPANDER_RESET)
+        self._addr = gpioexp_address
+        self._gpioexp.write_byte(self._addr, GPIO_EXPANDER_RESET)
 
     def digitalReadPort(self):
-        port = self._gpioexp.read_word_data(GPIO_EXPANDER_DIGITAL_READ)
+        port = self._gpioexp.read_word_data(self._addr, GPIO_EXPANDER_DIGITAL_READ)
         return port
 
     def digitalWritePort(self, value):
-        self._gpioexp.write_word_data(GPIO_EXPANDER_DIGITAL_WRITE_HIGH, value)
-        self._gpioexp.write_word_data(GPIO_EXPANDER_DIGITAL_WRITE_LOW, ~value)        
+        self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, value)
+        self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_LOW, ~value)        
 
     def digitalWrite(self, pin, value):
         sendData = 1<<pin
         if value:
-            self._gpioexp.write_word_data(DIGITAL_WRITE_HIGH, sendData)
+            self._gpioexp.write_word_data(self._addr, DIGITAL_WRITE_HIGH, sendData)
         else:
-            self._gpioexp.write_word_data(DIGITAL_WRITE_LOW, sendData)
+            self._gpioexp.write_word_data(self._addr, DIGITAL_WRITE_LOW, sendData)
 '''
 #    def pinMode(pin, mode):
 #        if mode
