@@ -61,7 +61,7 @@ class gpioexp(object):
         self._i2c.writeReg16(self._io, GPIO_EXPANDER_DIGITAL_WRITE_LOW, ~value)
 
     def digitalWrite(self, pin, value):
-        sendData = 0x0001<<pin
+        sendData = self.reverseByte(0x0001<<pin)
         if value:
             self._i2c.writeReg16(self._io, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, sendData)
         else:
