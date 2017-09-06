@@ -44,7 +44,7 @@ class gpioexp(object):
         self._i2c = wp.I2C()
         self._io = self._i2c.setupInterface('/dev/i2c-' + str(getPiI2CBusNumber()), gpioexp_address)
 #        self._gpioexp.write_byte(self._addr, GPIO_EXPANDER_RESET)
-    def reverseByte(data):
+    def reverseByte(self, data):
         result = 0
         while (data > 0):
             result = (result << 8) | (data & 0xff)
