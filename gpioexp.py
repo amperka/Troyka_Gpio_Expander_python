@@ -44,19 +44,16 @@ class gpioexp(object):
         self._i2c = wp.I2C()
         self._io = self._i2c.setupInterface('/dev/i2c-' + str(getPiI2CBusNumber()), gpioexp_address)
 #        self._gpioexp.write_byte(self._addr, GPIO_EXPANDER_RESET)
-    def reverseByte(self, data):
-        result = 0
-        while (data > 0):
-            result = (result << 8) | (data & 0xff)
-            data = data >> 8
+    def reverse_uint16(self, data):
+        result = ((data & 0xff) << 8) | ((data>>8) & 0xff)
         return result
 
     def digitalReadPort(self):
-        port = self.reverseByte(self._i2c.readReg16(self._io, GPIO_EXPANDER_DIGITAL_READ))
+        port = self.reverse_uint16(self._i2c.readReg16(self._io, GPIO_EXPANDER_DIGITAL_READ))
         return port
 
     def digitalWritePort(self, value):
-        value = self.reverseByte(value)
+        value = self.reverse_uint16(value)
         self._i2c.writeReg16(self._io, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, value)
         self._i2c.writeReg16(self._io, GPIO_EXPANDER_DIGITAL_WRITE_LOW, ~value)
 
@@ -69,7 +66,7 @@ class gpioexp(object):
 
     def analogRead16(self, pin):
         self._i2c.writeReg16(self._io, GPIO_EXPANDER_ANALOG_READ, pin)
-        return self.reverseByte(self._i2c.readReg16(self._io, GPIO_EXPANDER_ANALOG_READ))
+        return self.reverse_uint16(self._i2c.readReg16(self._io, GPIO_EXPANDER_ANALOG_READ))
 
     def analogRead(self, pin):
         return self.analogRead16(pin)/4095.0
