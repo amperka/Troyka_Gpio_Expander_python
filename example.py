@@ -1,6 +1,5 @@
-import gpioexp
+import gpioexp as exp
 from time import sleep
-exp = gpioexp.GpioExp()
 
 while True:
     exp.digitalWritePort(0xffff)

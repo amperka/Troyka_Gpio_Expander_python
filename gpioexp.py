@@ -1,25 +1,6 @@
 # The MIT License (MIT)
-#
-# Copyright (c) 2016 Adafruit Industries
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-import smbus
+
+import wiringpi as wp
 
 GPIO_EXPANDER_DEFAULT_I2C_ADDRESS   = 0X2A
 GPIO_EXPANDER_WHO_AM_I              = 0x00
@@ -38,47 +19,76 @@ GPIO_EXPANDER_ANALOG_READ           = 0x0C
 GPIO_EXPANDER_PWM_FREQ              = 0x0D
 GPIO_EXPANDER_ADC_SPEED             = 0x0E
 
+def getPiI2CBusNumber():
+    """
+    Returns the I2C bus number (/dev/i2c-#) for the Raspberry Pi being used.
 
+    Courtesy quick2wire-python-api
+    https://github.com/quick2wire/quick2wire-python-api
+    """
+    try:
+        with open('/proc/cpuinfo','r') as f:
+            for line in f:
+                if line.startswith('Revision'):
+                    return 1
+    except:
+        return 0
 
-class GpioExp(object):
+class gpioexp(object):
     """Troyka gpio expander."""
 
-    def __init__(self, gpioexp_address=GPIO_EXPANDER_DEFAULT_I2C_ADDRESS,
-                 i2c=1):
+    def __init__(self, gpioexp_address=GPIO_EXPANDER_DEFAULT_I2C_ADDRESS):
 
         # Setup I2C interface for accelerometer and magnetometer.
-        self._gpioexp = smbus.SMBus(i2c)
-        self._addr = gpioexp_address
+        wp.wiringPiSetup()
+        self._i2c = wp.I2C()
+        self._io = self._i2c.setupInterface('/dev/i2c-' + str(getPiI2CBusNumber()), gpioexp_address)
 #        self._gpioexp.write_byte(self._addr, GPIO_EXPANDER_RESET)
+    def reverseByte(data):
+        result = 0
+        while (data > 0):
+            result = (result << 8) | (data & 0xff)
+            data = data >> 8
+        return result
 
     def digitalReadPort(self):
-        port = self._gpioexp.read_word_data(self._addr, GPIO_EXPANDER_DIGITAL_READ)
+        port = self.reverseByte(self._i2c.readReg16(self._io, GPIO_EXPANDER_DIGITAL_READ))
         return port
 
     def digitalWritePort(self, value):
-        self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, value)
-        self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_LOW, ~value)        
+        value = self.reverseByte(value)
+        self._i2c.writeReg16(self._io, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, value)
+        self._i2c.writeReg16(self._io, GPIO_EXPANDER_DIGITAL_WRITE_LOW, ~value)
 
     def digitalWrite(self, pin, value):
-        sendData = 0x0001<<pin
+        sendData = self.reverseByte(0x0001<<pin)
         if value:
-            self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, sendData)
+            self._i2c.writeReg16(self._io, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, sendData)
         else:
-            self._gpioexp.write_word_data(self._addr, GPIO_EXPANDER_DIGITAL_WRITE_LOW, sendData)
+            self._i2c.writeReg16(self._io, GPIO_EXPANDER_DIGITAL_WRITE_LOW, sendData)
+
+    def analogRead16(self, pin):
+        self._i2c.writeReg16(self._io, GPIO_EXPANDER_ANALOG_READ, pin)
+        return self.reverseByte(self._i2c.readReg16(self._io, GPIO_EXPANDER_ANALOG_READ))
+
+    def analogRead(self, pin):
+        return self.analogRead16(pin)/4095.0
+
+
 '''
 #    def pinMode(pin, mode):
 #        if mode
-        
+
     def analogWrite(self, pin, value):
         valWord = value * 65535
         valH = (valWord>>8) & 0xff
         valL = valWord & 0xff
         sendData = [pin, valH, valL]
         self._gpioexp.writeList(GPIO_EXPANDER_ANALOG_WRITE, sendData)
-    
+
     def pwmFreq(self, freq):
         self._gpioexp.write16(GPIO_EXPANDER_PWM_FREQ, freq)
-    
+
     def changeAddr(self, newAddr):
         self._gpioexp.write8(GPIO_EXPANDER_CHANGE_I2C_ADDR, newAddr)
 
