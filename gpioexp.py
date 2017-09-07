@@ -123,6 +123,11 @@ class gpioexp(object):
         if (mode == OUTPUT):
             self._i2c.writeReg16(self._io, GPIO_EXPANDER_PORT_MODE_OUTPUT, sendData)
 
+    def analogWrite(self, pin, value):
+        value = int(value*255)
+        data = (pin & 0xff)|((value & 0xff)<<8)
+        self._i2c.writeReg16(self._io, GPIO_EXPANDER_ANALOG_WRITE, data)
+
 
 '''
 #    def pinMode(pin, mode):
