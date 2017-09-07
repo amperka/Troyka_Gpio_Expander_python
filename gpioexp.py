@@ -19,6 +19,27 @@ GPIO_EXPANDER_ANALOG_READ           = 0x0C
 GPIO_EXPANDER_PWM_FREQ              = 0x0D
 GPIO_EXPANDER_ADC_SPEED             = 0x0E
 
+
+"""
+  InputMode
+  , PullUpMode
+  , PullDownMode
+  , OutputMode
+  , PwmMode
+  , AnalogMode
+
+      uint16_t sendData = 1<<pin;
+    if (mode == INPUT) {
+        writeCmd16BitData(PORT_MODE_INPUT, sendData);
+    } else if (mode == OUTPUT) {
+        writeCmd16BitData(PORT_MODE_OUTPUT, sendData);
+    } else if (mode == INPUT_PULLUP) {
+        writeCmd16BitData(PORT_MODE_PULLUP, sendData);
+    } else if (mode == INPUT_PULLDOWN) {
+        writeCmd16BitData(PORT_MODE_PULLDOWN, sendData);
+    }
+    """
+
 def getPiI2CBusNumber():
     """
     Returns the I2C bus number (/dev/i2c-#) for the Raspberry Pi being used.
@@ -52,6 +73,10 @@ class gpioexp(object):
         port = self.reverse_uint16(self._i2c.readReg16(self._io, GPIO_EXPANDER_DIGITAL_READ))
         return port
 
+    def digitalRead(self, pin):
+        mask = 0x0001 << pin
+        return (digitalReadPort() & mask)
+
     def digitalWritePort(self, value):
         value = self.reverse_uint16(value)
         self._i2c.writeReg16(self._io, GPIO_EXPANDER_DIGITAL_WRITE_HIGH, value)
@@ -70,6 +95,18 @@ class gpioexp(object):
 
     def analogRead(self, pin):
         return self.analogRead16(pin)/4095.0
+
+    def pwmFreq(self, freq):
+        self._i2c.writeReg16(self._io, GPIO_EXPANDER_PWM_FREQ, self.reverse_uint16(freq))
+
+    def changeAddr(self, newAddr):
+        self._i2c.writeReg16(self._io, GPIO_EXPANDER_CHANGE_I2C_ADDR, newAddr))
+
+    def saveAddr(self):
+        self._i2c.write(self._io, GPIO_EXPANDER_SAVE_I2C_ADDR)
+
+    def reset(self):
+        self._i2c.write(self._io, GPIO_EXPANDER_RESET)
 
 
 '''
