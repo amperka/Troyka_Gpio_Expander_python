@@ -19,6 +19,10 @@ GPIO_EXPANDER_ANALOG_READ           = 0x0C
 GPIO_EXPANDER_PWM_FREQ              = 0x0D
 GPIO_EXPANDER_ADC_SPEED             = 0x0E
 
+INPUT          = 0
+OUTPUT         = 1
+INPUT_PULLUP   = 2
+INPUT_PULLDOWN = 3
 
 """
   InputMode
@@ -107,6 +111,17 @@ class gpioexp(object):
 
     def reset(self):
         self._i2c.write(self._io, GPIO_EXPANDER_RESET)
+
+    def pinMode(self, pin, mode):
+        sendData = self.reverse_uint16(0x0001<<pin)
+        if (mode == INPUT):
+            self._i2c.writeReg16(self._io, GPIO_EXPANDER_PORT_MODE_INPUT, sendData)
+        if (mode == INPUT_PULLUP):
+            self._i2c.writeReg16(self._io, GPIO_EXPANDER_PORT_MODE_PULLUP, sendData)
+        if (mode == INPUT_PULLDOWN):
+            self._i2c.writeReg16(self._io, GPIO_EXPANDER_PORT_MODE_PULLDOWN, sendData)
+        if (mode == OUTPUT):
+            self._i2c.writeReg16(self._io, GPIO_EXPANDER_PORT_MODE_OUTPUT, sendData)
 
 
 '''
