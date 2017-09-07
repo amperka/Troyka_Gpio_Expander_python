@@ -100,7 +100,7 @@ class gpioexp(object):
         self._i2c.writeReg16(self._io, GPIO_EXPANDER_PWM_FREQ, self.reverse_uint16(freq))
 
     def changeAddr(self, newAddr):
-        self._i2c.writeReg16(self._io, GPIO_EXPANDER_CHANGE_I2C_ADDR, newAddr))
+        self._i2c.writeReg16(self._io, GPIO_EXPANDER_CHANGE_I2C_ADDR, newAddr)
 
     def saveAddr(self):
         self._i2c.write(self._io, GPIO_EXPANDER_SAVE_I2C_ADDR)
