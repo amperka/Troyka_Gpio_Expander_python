@@ -24,26 +24,6 @@ OUTPUT         = 1
 INPUT_PULLUP   = 2
 INPUT_PULLDOWN = 3
 
-"""
-  InputMode
-  , PullUpMode
-  , PullDownMode
-  , OutputMode
-  , PwmMode
-  , AnalogMode
-
-      uint16_t sendData = 1<<pin;
-    if (mode == INPUT) {
-        writeCmd16BitData(PORT_MODE_INPUT, sendData);
-    } else if (mode == OUTPUT) {
-        writeCmd16BitData(PORT_MODE_OUTPUT, sendData);
-    } else if (mode == INPUT_PULLUP) {
-        writeCmd16BitData(PORT_MODE_PULLUP, sendData);
-    } else if (mode == INPUT_PULLDOWN) {
-        writeCmd16BitData(PORT_MODE_PULLDOWN, sendData);
-    }
-    """
-
 def getPiI2CBusNumber():
     """
     Returns the I2C bus number (/dev/i2c-#) for the Raspberry Pi being used.
@@ -79,7 +59,10 @@ class gpioexp(object):
 
     def digitalRead(self, pin):
         mask = 0x0001 << pin
-        return (digitalReadPort() & mask)
+        result = 0
+        if self.digitalReadPort() & mask:
+            result = 1
+        return result
 
     def digitalWritePort(self, value):
         value = self.reverse_uint16(value)
@@ -127,37 +110,3 @@ class gpioexp(object):
         value = int(value*255)
         data = (pin & 0xff)|((value & 0xff)<<8)
         self._i2c.writeReg16(self._io, GPIO_EXPANDER_ANALOG_WRITE, data)
-
-
-'''
-#    def pinMode(pin, mode):
-#        if mode
-
-    def analogWrite(self, pin, value):
-        valWord = value * 65535
-        valH = (valWord>>8) & 0xff
-        valL = valWord & 0xff
-        sendData = [pin, valH, valL]
-        self._gpioexp.writeList(GPIO_EXPANDER_ANALOG_WRITE, sendData)
-
-    def pwmFreq(self, freq):
-        self._gpioexp.write16(GPIO_EXPANDER_PWM_FREQ, freq)
-
-    def changeAddr(self, newAddr):
-        self._gpioexp.write8(GPIO_EXPANDER_CHANGE_I2C_ADDR, newAddr)
-
-
-    def saveAddr(self):
-        self._gpioexp.writeRaw8(GPIO_EXPANDER_SAVE_I2C_ADDR)
-
-    def reset(self):
-        self._gpioexp.writeRaw8(GPIO_EXPANDER_RESET)
-
-    def digitalRead(self, pin):
-        mask = 1 << pin
-        return (digitalReadPort() & mask)
-
-    def analogRead(self, pin):
-        self._gpioexp.write8(GPIO_EXPANDER_ANALOG_READ, pin)
-        resilt = self._gpioexp._bus.i2c_read_device(self._address, 2)
-'''
