@@ -88,6 +88,7 @@ class gpioexp(object):
 
     def changeAddr(self, newAddr):
         self._i2c.writeReg16(self._io, GPIO_EXPANDER_CHANGE_I2C_ADDR, newAddr)
+        self._io = self._i2c.setupInterface('/dev/i2c-' + str(getPiI2CBusNumber()), newAddr)
 
     def saveAddr(self):
         self._i2c.write(self._io, GPIO_EXPANDER_SAVE_I2C_ADDR)
